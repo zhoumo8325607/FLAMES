@@ -1,0 +1,144 @@
+@base_url = http://10.12.5.188:20003
+@url = {{base_url}}/mes/api
+@token={{login.response.body.DATA.TOKEN}}
+
+# @name login
+POST {{base_url}}/user/api/login HTTP/1.1
+Content-Type: application/json
+projectId: 3
+
+{
+    "account": "3963282",
+    "password":"123456"
+}
+
+# return >
+
+
+### ======================= 登录页接口 =======================
+
+### 获取系统消息
+# @name mesSysMsg_getList
+POST {{base_url}}/exi/me/mesSysMsg/getList HTTP/1.1
+Content-Type: application/json
+
+{
+  "type": 1,
+  "status": 1
+}
+
+# return >
+
+### ======================= 首页数据及访问权限接口 =======================
+
+### 获取实时访问量
+# @name getPV
+POST {{base_url}}/user/api/sysAccessLog/getPV HTTP/1.1
+Content-Type: application/json
+token: {{token}}
+
+{}
+
+# return >
+{
+  "DATA": {
+    "time": "2020-12-22 19:20:00",
+    "list": [{
+      "label": "2020-12-22 08:00",
+      "value": 200
+    },{
+      "label": "2020-12-22 09:00",
+      "value": 400
+    },{
+      "label": "2020-12-22 10:00",
+      "value": 500
+    },{
+      "label": "2020-12-22 11:00",
+      "value": 200
+    },{
+      "label": "2020-12-22 12:00",
+      "value": 300
+    },{
+      "label": "2020-12-22 13:00",
+      "value": 200
+    },{
+      "label": "2020-12-22 14:00",
+      "value": 250
+    },{
+      "label": "2020-12-22 15:00",
+      "value": 500
+    },{
+      "label": "2020-12-23 16:00",
+      "value": 800
+    }]
+  },
+  "RESULT": "PASS"
+}
+
+### 获取在制订单及进度
+# @name getOrderProgress
+POST {{url}}/getOrderProgress HTTP/1.1
+Content-Type: application/json
+token: {{token}}
+
+{}
+
+# return >
+{
+  "DATA": [{
+  "name": "研发B18S01-DWB0035",
+  "qty": 1,
+  "progress": 76 // 百分比
+}],
+  "RESULT": "PASS"
+}
+
+### 获取接口调用执行TOP10
+# @name getApiTop
+POST {{url}}/getApiTop HTTP/1.1
+Content-Type: application/json
+token: {{token}}
+
+{}
+
+# return >
+{
+  "DATA": [{
+  "name": "LoadMaterialUp",
+  "url": "",
+  "ip": "170.20.200.119",
+  "time": "7.23",
+  "upward": true
+}],
+  "RESULT": "PASS"
+}
+
+### 获取2H IO邮件内容
+# @name getMailContent
+POST {{base_url}}/ct/api/mes2HIOReport/getMailContent HTTP/1.1
+Content-Type: application/json
+token: {{token}}
+
+{}
+
+# return >
+{
+  "DATA": "<html><head></head><body><body></html>",
+  "RESULT": "PASS"
+}
+
+### 手动发送2H IO邮件
+# @name sendMail
+POST {{base_url}}/ct/api/mes2HIOReport/sendMail HTTP/1.1
+Content-Type: application/json
+token: {{token}}
+
+{
+  "content":"<html><head></head><body><body></html>"
+}
+
+# return >
+{
+  "RESULT": "PASS"
+}
+### ======================= JMET请求与报表 =======================

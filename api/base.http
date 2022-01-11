@@ -1,0 +1,1029 @@
+# @base_url = http://10.12.5.188:20003
+@base_url = http://127.0.0.1:10020
+@local_base_url = http://10.6.78.90:10020
+@project = zatanna
+@projectId = 3
+# @url = {{base_url}}/{{project}}/mes/api
+@url = {{base_url}}/mes/api
+@url1 = {{base_url}}/{{project}}/ext/me
+@user_url = {{base_url}}/user/api
+@token={{login.response.body.DATA.TOKEN}}
+
+### ======================= 用户模块 =======================
+# 登录
+# @name login
+POST {{user_url}}/login HTTP/1.1
+Content-Type: application/json
+projectId:{{projectId}}
+
+{
+    "account": "3342259",
+    "password":"3342259"
+}
+###
+
+# 修改密码  更改完成后需要重新调用登录接口才能再次更改
+# @name login
+POST {{user_url}}/mesSysUser/changePwd HTTP/1.1
+Content-Type: application/json
+token: {{token}}
+
+{
+    "oldPwd": "xuweijie520",
+    "newPwd":"xuweijie123"
+}
+###
+
+# 根据工号获取邮箱
+# @name login
+POST {{user_url}}/mesSysUser/getEmail HTTP/1.1
+Content-Type: application/json
+token: {{token}}
+
+{
+    "workNo": "3144384"
+}
+###
+
+# 发送重置密码的邮件
+# @name login
+POST {{user_url}}/mesSysUser/sendResetMail HTTP/1.1
+Content-Type: application/json
+token: {{token}}
+
+{
+    "workNo": "3144384"
+}
+###
+
+### ======================= MES接口 =======================
+
+# @name getById
+@module = mesRouteConditionGroupMember
+GET {{url}}/{{module}}/getById?token={{token}}&id=7302
+Content-Type: application/x-www-form-urlencoded
+
+# 根据资源代码获取资源对象信息
+POST {{url}}/mesResource/getResourceByCode HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+###
+
+# 测试hook
+# @name hook
+POST {{url}}/mesFlowControl/start HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+
+shoporder=GA-GB-UNPACK
+&token=99720ce2-e4c8-44cb-b97b-a7b11447ce66
+&sn=H98W23456789
+&processName=TEST-MPK030
+&resourceCode=E8:6F:38:CF:10:9F
+
+# POST JSON
+# POST 
+
+###
+
+# 获取工单列表
+POST {{url}}/mesShoporder/getShoporderList HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+
+###
+
+# 获取工单对象
+POST {{url}}/mesShoporder/getOneByShoporder HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+
+shoporder=4310533384
+###
+# 根据SN获取BOM信息
+POST http://10.76.52.144:10020/mes/api/mesSn/getBomBySn
+Content-Type: application/json
+token: {{token}}
+ 
+{
+    "sn": "9095564e-6058-4dab-b870-792bfea310c3",
+    "resourceCode": "PHX200-MLB-DFU-L01-16",
+    "processName": "PH-M040-HOTBAR"
+}
+###
+# start
+POST {{url}}/mesFlowControl/start HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+
+sn=9095564e-6058-4dab-b870-792bfea310c3
+&shoporder=MESA0001
+&processName=PH-M010-FDRV
+&resourceCode=PHX200-MLB-DFU
+###
+
+# complete
+POST {{url}}/mesFlowControl/complete HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+
+sn=9095564e-6058-4dab-b870-792bfea310c3
+&processName=PH-M010-FDRV
+&resourceCode=PHX200-MLB-DFU
+###
+# 根据工单号同步工单
+POST {{url}}/mesShoporder/synchroShopOrderByNo HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+
+factory=7011
+&shoporder=7540007066
+###
+
+# 根据日期同步工单
+POST {{url}}/mesShoporder/synchroShopOrderByDate HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+
+factory=7011
+&startDate=20201101
+&endDate=20201201
+###
+
+# 数据绑定
+POST {{url}}/mesFlowControl/bindData HTTP/1.1
+Content-Type: application/json
+token: {{token}}
+
+{
+    "sn":"9095564e-6058-4dab-b870-792bfea310c3",
+    "resourceCode":"PHX200-MLB-DFU-L01-16",
+    "shoporder":"MESA0001",
+    "processName":"PH-M040-HOTBAR",
+    "matDataList":[
+        {
+            "rawMatNo":"12829536-00",
+            "rawMatCode":"aaaaa",
+            "rawMatVersion":"A",
+            "qty":1
+        }
+    ]
+}
+###
+POST http://${this.$http.baseUrl}:10020/mes/api/mesMat/getPage
+Content-Type: application/json
+token:{{token}}
+
+{
+    "type":1,
+    "currentPageNo":1,
+    "pageSize":10
+}
+
+###
+POST http://${this.$http.baseUrl}:10020/mes/api/mesMat/saveMateriel
+Content-Type: application/json
+token:{{token}}
+
+{
+    "matNo":"1",
+    "custMatNo":"1",
+    "description":"1",
+    "version":"1",
+    "descriptionCust":"1",
+    "mask":"1",
+    "color":"1",
+    "vendorName":"1"
+}
+
+
+
+
+### 获取工艺路线列表
+POST {{url}}/mesRoute/getPage
+Content-Type: application/json
+token: {{token}}
+ 
+{
+    "name": "",
+    "type": "",
+    "version": "",
+    "status": 0,
+    "currentPageNo": 1,
+    "pageSize": 10
+}
+
+
+### 获取离线抽检列表
+POST {{url}}/mesSamplingSn/getSamplingStation
+Content-Type: application/json
+token: {{token}}
+ 
+{
+    "sn": "D1YCR001AA64457Y61S",
+    "samplingProcessName": "IQC-MANUAL"
+}
+
+### 获取离线抽检列表
+POST {{url}}/mesSamplingSn/getSamplingSnInfo
+Content-Type: application/json
+token: {{token}}
+ 
+{
+    "sn": "D1YCR001AA64457Y55S",
+    "samplingProcessName": "CR040-CR-PTG"
+}
+
+# > mesRoute_getPage.json
+
+### 根据ID获取一条工艺路线
+POST {{url}}/mesRoute/getById
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+ 
+id=30001
+
+# > mesRoute_getById.json
+
+### 添加工艺路线
+POST {{url}}/mesRoute/save
+Content-Type: application/json
+token: {{token}}
+ 
+{
+    "sectionName":"MESA",
+    "name":"LOKI-MESA-0001",
+    "type":0,
+    "version":"002_001",
+    "currentVersion":"Y",
+    "description":"测试添加",
+    "status":0
+}
+
+### 修改工艺路线
+POST {{url}}/mesRoute/updateById
+Content-Type: application/json
+token: {{token}}
+ 
+{
+    "id": 30001,
+    "sectionName":"MESA",
+    "name":"LOKI-MESA-0001",
+    "type":0,
+    "version":"002_000",
+    "currentVersion":"Y",
+    "description":"测试添加2",
+    "status":0
+}
+
+### 删除工艺路线
+POST {{url}}/mesRoute/removeById
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+ 
+id=40002
+
+### 获取工序
+POST {{url}}/mesProcess/getList
+Content-Type: application/json
+token: {{token}}
+ 
+{
+    "name": "",
+    "status": 0
+}
+
+# > mesProcess_getList.json
+
+### 添加工艺路线工序
+POST {{url}}/mesRoute/saveRouteFlow
+Content-Type: application/json
+token: {{token}}
+ 
+{
+  "nodes": [
+    {
+      "id": "node43",
+      "label": "PH-M010-FDRV",
+      "x": 89,
+      "y": 95,
+      "condition": null,
+      "shape": "customNode",
+      "color": "#1890ff",
+      "image": "/images/start.svg"
+    },
+    {
+      "id": "node54",
+      "label": "PH-M040-HOTBAR",
+      "x": 245,
+      "y": 232,
+      "condition": null,
+      "shape": "customNode",
+      "color": "#1890ff",
+      "image": "/images/start.svg"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge92",
+      "source": "node43",
+      "target": "node54",
+      "sourceId": "node43",
+      "targetId": "node54",
+      "start": {
+        "x": 0,
+        "y": 17
+      },
+      "end": {
+        "x": 0,
+        "y": -17
+      },
+      "shape": "customEdge",
+      "type": "edge",
+      "startPoint": {
+        "x": "108.934",
+        "y": "112.5"
+      },
+      "endPoint": {
+        "x": "225.074",
+        "y": "214.5"
+      }
+    }
+  ],
+  "routeId": 30001
+}
+### 复制工艺路线工序（新建）
+POST {{url}}/mesRoute/copySave
+Content-Type: application/json
+token: {{token}}
+ 
+{
+    "id":30001,
+    "name":"LOKI-MESA-0001",
+    "version":"002_001"
+}
+
+###
+POST ${this.$http.baseUrl}mes/api/mesPrintLabelConfig/getPage 
+Content-Type: application/json 
+token:{{token}}
+
+{
+    "currentPageNo":1,
+    "pageSize":10
+}
+
+
+### 获取工艺路线流程
+POST {{url}}/mesRoute/getRouteFlow
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+ 
+routeId=30001
+
+# > mesRoute_getRouteFlow.json
+
+###
+POST http://127.0.0.1:10020/mes/exi/mesSysMsg/getList
+Content-Type: application/json
+
+{
+  
+}
+### 新建菜单
+# @name mesSysMenu_save
+POST {{user_url}}/mesSysMenu/save
+Content-Type: application/json 
+token:{{token}}
+
+{
+  "authorityCode": "equipmentDistribution",
+  "code": "equipmentDistribution",
+  "isMenu": "Y",
+  "menuName": "设备维护",
+  "menuNameEn": "equipmentDistribution",
+  "orderNum": "2",
+  "parentId": 2
+}
+
+### 更新菜单项
+# @name mesSysMenu_updateById
+POST {{user_url}}/mesSysMenu/updateById
+Content-Type: application/json 
+token:{{token}}
+
+{
+  "authorityCode": "repair",
+  "code": "repair",
+  "id": 1512,
+  "isMenu": "Y",
+  "menuName": "维修模块",
+  "menuNameEn": "repair",
+  "orderNum": 3,
+  "parentId": 1
+}
+
+### 查询子级菜单
+# @name mesSysMenu_getList
+POST {{user_url}}/mesSysMenu/getList
+Content-Type: application/json 
+token:{{token}}
+
+{
+  "pid": 2
+}
+
+### 组件code校验
+# @name mesFlowControl_moduleCodeValidate
+POST {{url}}/mesFlowControl/moduleCodeValidate
+Content-Type: application/json 
+token:{{token}}
+
+{
+  "matNo": "12829560-00",
+  "version":"A",
+  "code": "ASYTNZ7FPEq9N0128",
+  "sn": "F6LF9K1TLBYLG"
+}
+
+# TODO
+### ======================= 接口测试用例 =======================
+
+###
+POST http://127.0.0.1:10020/mes/api/mesShopMatStockAux/getOneByGlueSn?token=6dd11bb2-e6c9-4d81-891a-442ab98c9e10
+Content-Type: application/x-www-form-urlencoded
+
+sn=GU5A946-15389123456NMC211201000Q
+
+###
+POST  http://127.0.0.1:10020/mes/api/mesMat/judgeMatMaskAndValidDate?token=b75a3298-7702-4d54-acd0-78c0b5cb6c77&batchNo=GU5A946-15389111111NMC210501&matNo=13091223-00
+Content-Type: application/x-www-form-urlencoded
+
+###
+POST http://127.0.0.1:10020/mes/api/mesFlowControl/moduleCodeValidate
+Content-Type: application/json
+token:{{token}}
+
+{
+  "matNo":"13091223-00",
+  "code":"GU5A946-15389123456NMC211201000M",
+  "version":"A0",
+  "sn":"ABC210318ABCD0000"
+}
+
+
+###
+POST  http://10.76.17.56:10020/mes/api/mesShopMatStockAux/getOneByGlueSn?token=d58c5798-9366-4f2d-a51a-493341a5c213&sn=AB11111A0001
+
+
+###
+POST http://10.76.17.56:10020/mes/api/mesShopMatStockAux/saveGluePrintData
+Content-Type: application/json
+token:{{token}}
+
+{
+  "matNo":"13091224-00/A0",
+  "originalQty":300,
+  "batchNo":"AB211101",
+  "sns":["AB2111010001"]
+}
+
+###
+POST http://10.12.5.188:20003/mes/api/mesMat/judgeMatExists?matNo=13091224-00/A0&token=3172bb54-fb62-456d-9daf-758b01c1c417
+
+
+###
+POST http://127.0.0.1:10020/mes/api/mesSysMaintainSche/getList
+Content-Type: application/json
+token:{{token}}
+
+{
+  "day":"2021-03-24",
+  "name":""
+}
+
+
+{
+  "DATA": id,
+  "RESULT": "PASS"
+}
+
+
+###信息插入接口
+POST http://127.0.0.1:10020/mes/api/mesSysClientErrorLog/save
+Content-Type: application/json
+token:{{token}}
+
+{
+  "title":"2",//异常标题
+  "paramStr":"2",//参数
+  "errorLog":"2",//异常日志
+  "workNo":"2",//账号
+  "macAddress":"2",//MAC地址
+  "ipAddress":"2",//IP地址
+  "status":"2",//状态
+  "errorLevel":"2",//异常等级
+  "remark":"2"//描述
+}
+
+//返回ID
+{
+  "DATA": id,
+  "RESULT": "PASS"
+}
+
+### ======================= bobcatRaw报表数据接口 =======================
+POST {{base_url}}/ct/api/bobcatAddRecord/getPage
+Content-Type: application/json
+token: {{token}}
+ 
+{
+    "sn": "",
+    "stationId": "",
+    "startStopTime": "2021-03-12 01:48:45",
+    "endStopTime": "2021-03-13 01:48:45",
+    "currentPageNo": 1,
+    "pageSize": 10
+}
+###
+
+###图片上传接口
+POST http://127.0.0.1:10020/mes/api/mesSysClientErrorLog/importPicture?token=3172bb54-fb62-456d-9daf-758b01c1c417&id=1
+Content-Type: multipart/form-data
+
+###
+POST http://127.0.0.1:10020/mes/api/mesPrintLabelConfig/getByMatNo?token=dcf33692-61b6-4d5f-a490-6dd9e56940d5&matNo=AUX
+
+
+###企业微信测试
+GET  https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=wwec31c93229a776d3&corpsecret=ENUnzUaPBgHuFxW4bBNqtPXc_hxBp3twg4PWavi7gfc
+
+###
+POST https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=H5pbkgPbrs-en3PCaOT7XDz0GZ8WpZGvYKgMoApH8iGtAydd7c2ArCWzPnper-LBDnq6AcR40Yw-Uh1A40Wvg_u5U5cc-3EncrbYOV-a-SmUC7Q_5gf9LC1k2N__ON5-jLWBe8-o8Ok6Gck0YDMfQZhJfelc3AREX8TlkRGifXDy0d9sOEUAd3XwIUHO61QzDpSgRnivY7ta3e2S27E4Fg
+Content-Type: application/json
+
+{
+   "touser" : "YangJiaKang",
+   "msgtype" : "text",
+   "agentid" : 1000002,
+   "text" : {
+       "content" : "我就试一下"
+   },
+   "safe":0
+}
+
+###
+POST http://127.0.0.1:10020/zatanna/mes/api/mesDeliveryCodeMember/getMessageByPallet?token=aa2f3254-0ffb-4c3c-8cd8-70c480c8dc1d&pallet=LGLPWEI2103170050
+
+{
+  "DATA": {
+    "palletNo": "008859098282141320",
+    "matNo": "99999999-10",
+    "matVersion": "A",
+    "description": "TEST-01",
+    "project": null,
+    "unit": "PCS",
+    "status": null,
+    "boxNum": 5,
+    "snNum": 5,
+    "receiveLocation": null
+  },
+  "RESULT": "PASS"
+}
+
+###
+POST http://127.0.0.1:10020/zatanna/mes/api/mesDeliveryCodeMember/getMessageByDeliveryCode?token=aa2f3254-0ffb-4c3c-8cd8-70c480c8dc1d&deliveryCode=421040200014
+
+{
+  "DATA": {
+    "factory": "7011 ABU事业部第二工厂",
+    "businessUnit": "比亚迪精密制造",
+    "createTime": "2021-04-02 16:07:48",
+    "company": "比亚迪精密制造",
+    "list": [
+      {
+        "palletNo": "LGLPWEI2103170050",
+        "matNo": "a",
+        "matVersion": "a",
+        "description": "a",
+        "project": "1",
+        "unit": "PCS",
+        "status": 1,
+        "boxNum": 1,
+        "snNum": 1,
+        "receiveLocation": "1"
+      }
+    ]
+  },
+  "RESULT": "PASS"
+}
+
+###保存接口未做校验，需在保存后清空数据或保存按钮只可点击一次
+POST http://127.0.0.1:10020/zatanna/mes/api/mesDeliveryCode/save
+Content-Type: application/json
+token:{{token}}
+
+[
+    {
+      "pallet": "LGLPWEI2103170050",
+      "matNo": "a",
+      "matVersion": "a",
+      "matDescription": "a",
+      "project": "1",
+      "unit": "PCS",
+      "status": 2,
+      "boxQty": 1,
+      "snQty": 1,
+      "receiveLocation": "1"
+    }
+]
+
+
+{
+  "DATA": {
+    "factory": "7011 ABU事业部第二工厂",
+    "businessUnit": "比亚迪精密制造",
+    "createTime": "2021-04-02 16:15:55",
+    "deliveryNo": "421040200015",
+    "company": "比亚迪精密制造",
+    "list": [
+      {
+        "id": 6001,
+        "shard": null,
+        "deliveryCodeId": 6001,
+        "pallet": "LGLPWEI2103170050",
+        "matNo": "a",
+        "matVersion": "a",
+        "matDescription": "a",
+        "boxQty": 1,
+        "snQty": 1,
+        "unit": "PCS",
+        "receiveLocation": "1",
+        "createName": "wang.wenbin",
+        "createTime": "2021-04-02 16:15:55",
+        "updateName": null,
+        "updateTime": null,
+        "project": "1",
+        "status": 1
+      }
+    ]
+  },
+  "RESULT": "PASS"
+}
+###作废
+POST http://127.0.0.1:10020/zatanna/mes/api/mesDeliveryCode/invalid?token=aa2f3254-0ffb-4c3c-8cd8-70c480c8dc1d&deliveryCode=421040200013
+
+{
+  "RESULT": "PASS"
+}
+
+
+###
+POST  http://127.0.0.1:10020/zatanna/mes/api/mesDeliveryCodeMember/getPage
+Content-Type: application/json
+token:{{token}}
+
+{
+  # "pallet":"701121031900005",
+  # "deliveryNo":"421040600003",
+  # "matNo":"12935868-00",
+  "operateName":"SZF",
+  # "status":"2",
+  "currentPageNo":1,
+  "pageSize":10
+}
+{
+  "total": 1,
+  "DATA": [
+    {
+      "deliveryNo": "421040600003",
+      "palletNo": "701121031900005",
+      "matNo": "12935868-00",
+      "matVersion": "V",
+      "description": "测试",
+      "project": null,
+      "unit": "PCS",
+      "status": null,
+      "boxNum": 1,
+      "snNum": 1,
+      "receiveLocation": "qwer",
+      "createName": "SZF",
+      "createTime": "2021-04-06 17:11:10",
+      "invalidName": null,
+      "invalidTime": null
+    }
+  ],
+  "RESULT": "PASS"
+}
+###
+POST http://127.0.0.1:10020/zatanna/mes/api/mesPrintLog/save
+Content-Type: application/json
+token:{{token}}
+
+{
+  "sn": "1",       //条码
+  "shoporder": "2",//工单
+  "line": "1",     //线体
+  "process": "1",  //工序
+  "matNo": "1",    //物料号
+  "version": "1",  //物料版本
+  "resourceName": "1",//MAC地址
+  "scriptName": "1", //脚本名称
+  "remark": "1",  //原因
+  "printContent": "1111"//打印内容
+}
+
+
+###
+POST http://127.0.0.1:10020/zatanna/mes/exi/mesDeliveryCode/getByDeliveryNo?deliveryNo=421040600004
+
+{
+  "factoryCode": "7011 ",
+  "companyName": "比亚迪精密制造",
+  "dataList": [
+    {
+      "palletNo": "701121031900005",
+      "projectName": "",
+      "salesOrder": null,
+      "itemNo": null,
+      "shipmentVr": null,
+      "dataList": [
+        {
+          "boxno": "BYDZA202103191126",
+          "productPn": "12935868-00",
+          "custPn": "kh8888-00",
+          "pnDescripe": "测试",
+          "boxQty": 1,
+          "unit": "PCS",
+          "dataList": [
+            {
+              "sn": "LGLPWEI2103190480",
+              "productOrder": "打样"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "divisionName": "比亚迪精密制造",
+  "factoryName": "7011 ABU事业部第二工厂",
+  "warehouseCode": "",
+  "deliveryCode": "421040600003"
+}
+
+###
+GET http://127.0.0.1:10020/zatanna/mes/api/mesActivityOption/getListByCode?token=782e78bd-5b23-4e76-a606-c4317fe32c7a&code=""
+
+
+### 辅料客户端过站式操作
+POST http://127.0.0.1:10020/zatanna/mes/api/mesShopMatStockAux/dealWithSn?sn=YJK  
+token:{{token}}
+//sn 为辅料DID 
+
+//成功提示
+# {
+#   "DATA": "开始搅拌",  //当前操作提示
+#   "RESULT": "PASS"
+# }
+
+
+###
+POST http://127.0.0.1:10020/zatanna/mes/api/mesCustomFields/getCustomFieldValues
+token:{{token}}
+Content-Type: application/json
+
+{
+  "program":"打样包装", //程序名称
+  "programId":null     //程序ID
+}
+//返回值
+{
+  "DATA": {
+    "TEST": "11"     //自定义数据列表
+  },
+  "RESULT": "PASS"
+}
+
+
+###
+POST http://127.0.0.1:10020/zatanna/mes/api/mesSnLogBind/getListBySn?sn=A000000012
+token:{{token}}
+Content-Type: application/x-www-form-urlencoded
+
+
+###
+POST http://127.0.0.1:10020/zatanna/mes/api/mesProcess/getCustomFieldByProcess?process=NE-ASY040-INPUT
+token:{{token}}
+Content-Type: application/x-www-form-urlencoded
+
+{
+  "DATA": {
+    "ISINPUT": "1",
+    "ISSHOWPICTURE": "1",
+    "ISPRINT": "1"
+  },
+  "RESULT": "PASS"
+}
+
+
+###
+POST http://127.0.0.1:10020/zatanna/mes/api/mesShimBumper/getThicknessByBpn?bpn=1
+token:{{token}}
+Content-Type: application/x-www-form-urlencoded
+
+###
+POST http://127.0.0.1:10020/zatanna/mes/api/mesResource/getResourceListByCode
+token:{{token}}
+Content-Type: application/x-www-form-urlencoded
+
+resourceCode=08:5B:D6:BF:6F:F8
+&resourceStatus=0
+&processStatus=0
+
+###扫Shim条码时调用
+POST http://10.12.5.188:20003/zatanna/api/me/mesShimBumper/getThicknessByShim
+token:{{token}}
+Content-Type: application/x-www-form-urlencoded
+
+sn=FF00502-00
+
+# {
+#   "DATA": 2,  //厚度值
+#   "RESULT": "PASS"
+# }
+
+###扫Bumper条码时调用
+POST http://127.0.0.1:10020/zatanna/mes/api/mesShimBumper/checkBumper
+token:{{token}}
+Content-Type: application/x-www-form-urlencoded
+
+sn=BUM02-00
+
+# {
+#   "RESULT": "PASS"
+# }
+
+###
+POST http://10.12.5.188:20003/zatanna/mes/api/mesShimBumper/getBpnBySnAndProcess
+token:{{token}}
+Content-Type: application/x-www-form-urlencoded
+
+sn=ZATANNAAFL1EZFFFF
+&process=A600
+
+# {
+#   "DATA": {
+#     "bpn": "HHH-001",  //物料号
+#     "thickness": 2     //厚度
+#   },
+#   "RESULT": "PASS"
+# }
+
+###获取系统当前时间，精确到毫秒
+POST http://10.12.5.188:20003/zatanna/exi/me/zerodowntime/getSysTime
+
+{
+  "DATA": "2021-04-23 13:06:45:766",
+  "RESULT": "PASS"
+}
+
+###通过cfg获取loki信息对象
+POST http://127.0.0.1:10020/zatanna/mes/api/mesLokiProductInfo/getOneByCfg
+Content-Type: application/json
+token:{{token}}
+
+{
+  "cfg":"ddsa"
+}
+
+### 获取2H IO邮件内容
+# @name getMailContent
+POST {{base_url}}/ct/api/mes2HIOReport/getMailContent HTTP/1.1
+Content-Type: application/json
+token: {{token}}
+
+{}
+
+# return >
+{
+  "DATA": "<html><head></head><body><body></html>",
+  "RESULT": "PASS"
+}
+
+### 手动发送2H IO邮件
+# @name sendMail
+POST {{base_url}}/ct/api/mes2HIOReport/sendMail HTTP/1.1
+Content-Type: application/json
+token: {{token}}
+
+{
+  "content":"<html><head></head><body><body></html>"
+}
+
+# return >
+{
+  "RESULT": "PASS"
+}
+### ======================= JMET请求与报表 =======================
+#JMET REQUEST LOG 导出
+POST {{base_url}}/{{project}}/jmet/api/requestLog/getPage
+Content-Type: application/json
+token: {{token}}
+ 
+{
+    "responseSuccess1":false,
+    "storageSuccess":true,
+    "currentPageNo":1,
+    "pageSize":10
+}
+ 
+###JMET REQUEST LOG 导出
+GET {{base_url}}/{{project}}/jmet/api/requestLog/exportExcel?token={{token}}
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+ 
+&param={"responseSuccess1":true}
+ 
+###JMET REQUEST LOG 消息明细
+GET {{base_url}}/{{project}}/jmet/api/requestLog/getDetailMessage?id=CB356272-89D8-4C33-A851-7EB04610DF42
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+
+### JMET SN BUFFER 分页
+POST {{base_url}}/{{project}}/mes/api/mesJmetBufferApr/getPage
+Content-Type: application/json
+token: {{token}}
+
+{
+  "week":null,
+  "configCode":null,
+  "currentRevision":"Y",
+  "apn":"MW752FD/A",
+  "currentPageNo":1,
+  "pageSize":10
+}
+
+###JMET SN BUFFER  queryBufferSize
+GET {{url}}/mesJmetBufferApr/queryBufferSize
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+
+###JMET SN BUFFER  同步BufferSize到JMET微服务
+GET {{url}}/mesJmetBufferApr/syncBufferSize?bufferSize=100
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+
+###JMET SN BUFFER  更新计划数量
+POST {{url}}/mesJmetBufferApr/updateById
+Content-Type: application/json
+token: {{token}}
+
+{
+  "id":"0fe88c01-3417-470e-a18c-b1f756167721",
+  "planQty":10000
+}
+
+###JMET SN BUFFER  删除ID
+GET {{url}}/mesJmetBufferApr/removeById?id=a8d34734-57b9-4321-b253-296496584254
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+
+###JMET SN LIST 分页
+POST {{base_url}}/{{project}}/jmet/api/jmetSn/getPage
+Content-Type: application/json
+token: {{token}}
+
+{
+    "clientUUID":"42C832E3-CBBD-4B50-9FE3-FC9755847E1B",
+    "sn":null,                         
+    "configCode":"AAA",                 
+    "updateStartTime":"2021-03-24 06:36:43",            
+    "updateEndTime":"2021-03-23 06:36:43",              
+    "isUsed":"Y",                      
+    "shopOrder":null,                   
+    "assignId":15064,                    
+    "currentPageNo":1,
+    "pageSize":10
+}
+
+###Jmet SN 下达
+POST {{base_url}}/{{project}}/jmet/api/core/requestSn
+Content-Type: application/json
+token: {{token}}
+ 
+{
+    "jmetIp":"http://10.12.6.242:20060/jmet/exi/test",
+    "clientUUID":"42C832E3-CBBD-4B50-9FE3-FC9755847E1B",
+    "configCode":"BBB",
+    "siteCode":"BYLG",
+    "count":"1",
+    "httpMethod1":null,
+    "httpMethod2":null
+}
+###bobcat报表测试
+POST http://127.0.0.1:10020/mes/api/mesBobcatHistoryLog/getPage
+Content-Type: application/json
+token:{{token}}
+
+{"sfc":"QWEFN0000AF7VCCC","currentPageNo":1,"pageSize":100}
+

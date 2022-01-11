@@ -1,0 +1,65 @@
+### ======================= CRUD接口定义 =======================
+@base_url = http://10.12.5.188:20003
+@local_base_url = http://127.0.0.1:10020
+@project = zatanna
+@projectId = 3
+@url = {{base_url}}/{{project}}/mes/api
+@user_url = {{base_url}}/user/api
+@token={{login.response.body.DATA.TOKEN}}
+@module=mesPlant
+
+### ======================= 用户登录 =======================
+# @name login
+POST {{user_url}}/login HTTP/1.1
+Content-Type: application/json
+projectId:{{projectId}}
+
+{
+    "account": "",
+    "password":""
+}
+
+### ======================= CRUD接口 =======================
+@id=250002
+### @name getById
+GET {{url}}/{{module}}/getById?id={{id}}
+Content-Type: application/x-www-form-urlencoded
+token:{{token}}
+
+### @name removeById
+GET {{url}}/{{module}}/removeById?id={{id}}
+Content-Type: application/x-www-form-urlencoded
+token:{{token}}
+
+### @name getPage
+POST {{url}}/{{module}}/getPage
+Content-Type: application/json
+token:{{token}}
+
+{
+    "currentPageNo":1,
+    "pageSize":10
+}
+
+### @name getList
+POST {{url}}/{{module}}/getList
+Content-Type: application/json
+token:{{token}}
+
+{
+  "name": "NKB-FATP-FOF"
+}
+
+### @name save
+POST {{url}}/{{module}}/save
+Content-Type: application/json
+token:{{token}}
+
+{}
+
+### @name updateById
+POST {{url}}/{{module}}/updateById
+Content-Type: application/json
+token:{{token}}
+
+{}

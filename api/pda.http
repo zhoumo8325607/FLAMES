@@ -1,0 +1,142 @@
+@base_url = http://10.12.5.188:20003
+# 测试地址
+@local_base_url = http://10.12.5.136
+# 正式项目前缀及项目ID
+@project = zatanna
+@projectId = 3
+# 正式后端地址，可能有多个，提取公共前缀
+@url = {{base_url}}/{{project}}/mes/api
+@user_url = {{base_url}}/user/api
+@me_url = {{base_url}}/{{project}}/api/me
+@exi_url = {{base_url}}/{{project}}/exi/me
+@token={{login.response.body.DATA.TOKEN}}
+
+### ======================= 用户模块 =======================
+
+# 登录
+# @name login
+POST {{user_url}}/login HTTP/1.1
+Content-Type: application/json
+projectId:{{projectId}}
+
+{
+    "account": "",
+    "password":""
+}
+
+
+### ======================= BG接口 =========================
+# 工序、工单下拉列表
+@model=mesProcess
+# @model=mesShoporder
+# @name getPage
+POST {{me_url}}/mesResource/getResourceListByCode
+Content-Type: application/x-www-form-urlencoded 
+token:{{token}}
+
+resourceCode=34:2E:B7:B1:22:C7&processStatus=0&resourceStatus=0
+
+
+###
+# @name getContainerData
+POST {{me_url}}/mesContainerData/getContainerData 
+Content-Type: application/x-www-form-urlencoded
+token:{{token}}
+
+containerNumber=C0002
+
+###
+# @name containerComplete
+POST {{me_url}}/mesFlowControl/containerComplete 
+Content-Type: application/x-www-form-urlencoded 
+token:{{token}}
+
+resourceCode=QH0001&processName=BG_抛边&containerNumber=C0005
+
+### ======================= 上料接口 =======================
+
+# 获取线体信息
+# @name getLineInfo
+`GET {{me_url}}/LoadMat/getLineInfo?param={"WORKSHOP":"一车间","SECTION_NAME":"FATP"}
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+###
+
+# 获取排产工单
+# @name GetScheduling
+GET {{exi_url}}/mes2service/Service.action?method=GetScheduling&param={"LOGIN_ID":"-1","CLIENT_ID":"123","LINE":"LASER-DZY-01","LINE_NAME":"LASER-DZY-01"}
+###
+
+# 获取上料列表
+# @name getMatLoadList
+GET {{me_url}}/LoadMat/getMatLoadList?param={"shoporder":"DZY-02","resrce":"40:49:0F:55:E0:29"}
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+###
+
+#从Wms系统获取DID打印信息
+# @name getDidInfo
+POST {{me_url}}/rawWms/getDidInfo
+Content-Type: application/json
+token: {{token}}
+
+{
+"batchNo":"PSB-BCP-210704-0206-01",
+"lineName":""
+}
+
+# 上传异常日志
+# @name loadMatFailHandle
+POST {{me_url}}/LoadMat/loadMatFailHandle
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+
+{
+    "user":"474140",
+    "shoporder":"ZH-02",
+    "lineName":"YOUBEI-01",
+    "processName":"YB;XZ",
+    "resrce":"",
+    "batchNo":"123456"
+}
+###
+
+# 获取线体DID异常信息
+# @name getDidFailInfo
+GET {{me_url}}/LoadMat/getDidFailInfo?param={"shoporder":"ZH-02","lineName":"YOUBEI-01","processName":"YB"}
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+###
+
+# 恢复生产
+# @name startProduce
+GET {{me_url}}/LoadMat/startProduce?loadFailId=110
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+###
+
+
+
+# @name addResourceOnlineStock
+GET {{me_url}}/LoadMat/addResourceOnlineStock?param={"PROCESS_NAME":"简单","MAT_NO":"12641546-00","REPLACE_GROUP":"","BATCH_NO":"AB2105040001","TOKEN":"5ff4c1d3-d83a-4f75-ba53-a1272a24075f","LINE_NAME":"kkkk","RESRCE":"","SHOPORDER":"CYIPD-T001","MAT_VERSION":"A","QTY":"100.0"}
+Content-Type: application/x-www-form-urlencoded
+token: {{token}}
+### 
+
+
+### ======================= BG项目AS镀膜工序接口 =========================
+# 查询工序列表列表
+# @name getResourceListByCode
+POST {{me_url}}/mesResource/getResourceListByCode
+Content-Type: application/x-www-form-urlencoded 
+token:{{token}}
+
+resourceCode=34:2E:B7:B1:22:C7&processStatus=0&resourceStatus=0
+
+###
+# @name addContainerResourceKey
+POST {{me_url}}/mesContainerData/addContainerResourceKey 
+Content-Type: application/x-www-form-urlencoded 
+token:{{token}}
+
+stationId=L001&containerNumber=C0001&processName=BG_镀AS
